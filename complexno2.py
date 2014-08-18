@@ -1,10 +1,29 @@
-import os, pygame
+import os, pygame, math
+red = (255,0,0)
+black = (0,0,0)
+
+def map_to_plane(x, y):
+    return x * 2.0 / 400.0 - 1.0, y * 2.0 / 400.0 - 1
+
+def square(a, b):
+    return a * a - b * b, 2 * a * b
+
+def magnitude2(a, b):
+    return a * a + b * b
+
+def inside(real, imaginary):
+    for times in range(0, 10):
+        real, imaginary = square(real, imaginary)
+        if magnitude2(real, imaginary) > 2.0:
+            return False
+    return True
 
 def show(image):
     screen = pygame.display.get_surface()
     screen.fill((255, 255, 255))
     screen.blit(image, (0, 0))
     pygame.display.flip()
+
 def main():
     pygame.init()
     black = (0,0,0)
@@ -14,12 +33,12 @@ def main():
     ar = pygame.PixelArray(surface)
     for x in range(0, 400):
         for y in range(0, 400):
-            u, v = (x+0.5) / 200.0 - 1.0, (y+0.5) / 200.0 - 1.0
-            if u * u + v * v < 1:
-                ar[x][y] = ((x % 255, y % 255, 0))
-    pygame.draw.lines(surface, black, False, [(0,200), (400,200)], 4)
-    pygame.draw.lines(surface, black, False, [(200,0), (200,400)], 4)
-
+            real, imaginary = map_to_plane(x,y)
+            in_set = inside(real, imaginary)
+            if in_set:
+                ar[x][y] = black
+            else:
+                ar[x][y] = red
     del ar
     show(surface)
     pygame.display.flip()
