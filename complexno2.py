@@ -1,10 +1,9 @@
 import os, pygame
-from pygame.compat import xrange_
 
-def show (image):
+def show(image):
     screen = pygame.display.get_surface()
     screen.fill((255, 255, 255))
-    screen.blit( image, ( 0, 0 ) )
+    screen.blit(image, (0, 0))
     pygame.display.flip()
 def main():
     pygame.init()
@@ -12,9 +11,9 @@ def main():
     pygame.display.set_mode((400, 400))
     surface = pygame.Surface((400, 400))
     surface.fill((255,255,255))
-    ar = pygame.PixelArray (surface)
-    for x in xrange_(0, 400):
-        for y in xrange_(0, 400):
+    ar = pygame.PixelArray(surface)
+    for x in range(0, 400):
+        for y in range(0, 400):
             u, v = (x+0.5) / 200.0 - 1.0, (y+0.5) / 200.0 - 1.0
             if u * u + v * v < 1:
                 ar[x][y] = ((x % 255, y % 255, 0))
