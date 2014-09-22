@@ -2,8 +2,16 @@ import os, pygame, math
 red = (255,0,0)
 black = (0,0,0)
 
+cx, cy = (0.0,0.0)
+scale = 4.0
+screenx = 400
+screeny = 400
+
 def map_to_plane(x, y):
-    return x * 2.0 / 400.0 - 1.0, y * 2.0 / 400.0 - 1
+    def calc(p,c):
+        return p * scale / max(screenx, screeny)-(scale/2.0) +c
+    return calc(x, cx), calc(y,cy)
+
 
 def square(a, b):
     return a * a - b * b, 2 * a * b
@@ -12,14 +20,18 @@ def magnitude2(a, b):
     return a * a + b * b
 
 def inside(real, imaginary):
-    for times in range(0, 10):
+    origR, origI = real, imaginary
+    for times in range(0, 50):
         real, imaginary = square(real, imaginary)
-        if magnitude2(real, imaginary) > 2.0:
-            return False
-    return True
+        real += origR
+        imaginary += origI
+        if magnitude2(real, imaginary) > 4.0:
+            return times
+
 
 def show(image):
     screen = pygame.display.get_surface()
+    pygame.display.set_caption('Complex numbers')
     screen.fill((255, 255, 255))
     screen.blit(image, (0, 0))
     pygame.display.flip()
@@ -27,18 +39,19 @@ def show(image):
 def main():
     pygame.init()
     black = (0,0,0)
-    pygame.display.set_mode((400, 400))
-    surface = pygame.Surface((400, 400))
+    pygame.display.set_caption('Complex numbers')
+    pygame.display.set_mode((screenx, screeny))
+    surface = pygame.Surface((screenx, screeny))
     surface.fill((255,255,255))
     ar = pygame.PixelArray(surface)
-    for x in range(0, 400):
-        for y in range(0, 400):
+    for x in range(0, screenx):
+        for y in range(0, screeny):
             real, imaginary = map_to_plane(x,y)
             in_set = inside(real, imaginary)
-            if in_set:
+            if in_set is None:
                 ar[x][y] = black
             else:
-                ar[x][y] = red
+                ar[x][y] = ((in_set * 7)%255,(in_set * 13)%255,(in_set * 17)%255)
     del ar
     show(surface)
     pygame.display.flip()
